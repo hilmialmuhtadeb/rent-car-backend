@@ -1,6 +1,10 @@
 package carcontroller
 
 import (
+	"fmt"
+	"path/filepath"
+
+	"github.com/google/uuid"
 	"github.com/gin-gonic/gin"
 	"github.com/hilmialmuhtadeb/rent-car-backend/models"
 )
@@ -24,14 +28,23 @@ func Show(c *gin.Context) {
 }
 
 func Create(c *gin.Context) {
-	var input models.Car
+	var input models.CarInput
 
-	if err := c.ShouldBindJSON(&input); err != nil {
+	if err := c.Bind(&input); err != nil {
+		c.JSON(422, gin.H{"error": err.Error()})
+		return
+	}
+	
+	fileExt := filepath.Ext(input.Image.Filename)
+	randomFileName := uuid.New().String() + fileExt
+	targetPath := fmt.Sprintf("images/%s", randomFileName)
+
+	if err := c.SaveUploadedFile(input.Image, targetPath); err != nil {
 		c.JSON(422, gin.H{"error": err.Error()})
 		return
 	}
 
-	car := models.Car{Name: input.Name, Type: input.Type, Rating: input.Rating, Fuel: input.Fuel, Image: input.Image, HourRate: input.HourRate, DayRate: input.DayRate, MonthRate: input.MonthRate}
+	car := models.Car{Name: input.Name, Type: input.CarType, Rating: input.Rating, Fuel: input.Fuel, Image: randomFileName, HourRate: input.HourRate, DayRate: input.DayRate, MonthRate: input.MonthRate}
 	models.DB.Create(&car)
 
 	c.JSON(200, car)
@@ -44,15 +57,26 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	var input models.Car
-	if err := c.ShouldBindJSON(&input); err != nil {
+	var input models.CarInput
+	if err := c.Bind(&input); err != nil {
 		c.JSON(422, gin.H{"error": err.Error()})
 		return
 	}
 
-	models.DB.Model(&car).Updates(input)
+	fileExt := filepath.Ext(input.Image.Filename)
+	randomFileName := uuid.New().String() + fileExt
+	targetPath := fmt.Sprintf("images/%s", randomFileName)
 
-	c.JSON(200, car)
+	if err := c.SaveUploadedFile(input.Image, targetPath); err != nil {
+		c.JSON(422, gin.H{"error": err.Error()})
+		return
+	}
+
+	updatedCar := models.Car{Name: input.Name, Type: input.CarType, Rating: input.Rating, Fuel: input.Fuel, Image: randomFileName, HourRate: input.HourRate, DayRate: input.DayRate, MonthRate: input.MonthRate}
+
+	models.DB.Model(&car).Updates(updatedCar)
+
+	c.JSON(200, input)
 }
 
 func Delete(c *gin.Context) {

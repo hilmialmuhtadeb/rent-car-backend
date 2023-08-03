@@ -10,6 +10,8 @@ func main() {
 	r := gin.Default()
 	models.ConnectDatabase()
 
+	r.Static("/images", "./images")
+
 	r.GET("/api/cars", carcontroller.Index)
 	r.GET("/api/cars/:id", carcontroller.Show)
 	r.POST("/api/cars", carcontroller.Create)
