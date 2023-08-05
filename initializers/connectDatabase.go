@@ -1,8 +1,10 @@
-package models
+package initializers
 
 import (
 	"gorm.io/gorm"
 	"gorm.io/driver/mysql"
+
+	"github.com/hilmialmuhtadeb/rent-car-backend/models"
 )
 
 var DB *gorm.DB
@@ -13,7 +15,7 @@ func ConnectDatabase() {
 		panic("Failed to connect to database!")
 	}
 
-	database.AutoMigrate(&Car{})
+	database.AutoMigrate(&models.Car{}, &models.User{}, &models.Order{}, &models.Admin{})
 
 	DB = database
 }
