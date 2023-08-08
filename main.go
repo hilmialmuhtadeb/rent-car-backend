@@ -2,14 +2,15 @@ package main
 
 import (
 	"time"
-	
-	"github.com/gin-gonic/gin"
+
 	"github.com/gin-contrib/cors"
-	
+	"github.com/gin-gonic/gin"
+
+	"github.com/hilmialmuhtadeb/rent-car-backend/controllers/adminController"
 	"github.com/hilmialmuhtadeb/rent-car-backend/controllers/carController"
-	"github.com/hilmialmuhtadeb/rent-car-backend/controllers/userController"
 	"github.com/hilmialmuhtadeb/rent-car-backend/controllers/orderController"
-	
+	"github.com/hilmialmuhtadeb/rent-car-backend/controllers/userController"
+
 	"github.com/hilmialmuhtadeb/rent-car-backend/middleware"
 
 	"github.com/hilmialmuhtadeb/rent-car-backend/initializers"
@@ -34,7 +35,7 @@ func main() {
 
 	r.Static("/images", "./images")
 
-	r.GET("/api/cars", middleware.AdminOnly, carController.Index)
+	r.GET("/api/cars", carController.Index)
 	r.GET("/api/cars/:id", carController.Show)
 	r.POST("/api/cars", carController.Create)
 	r.PUT("/api/cars/:id", carController.Update)
@@ -44,6 +45,11 @@ func main() {
 	r.GET("/api/users/profile", userController.Show)
 	r.POST("/api/users", userController.Create)
 	r.POST("/api/login", userController.Login)
+
+	r.GET("/api/admin", adminController.Show)
+	r.POST("/api/admin/login", adminController.AdminLogin)
+	r.POST("/api/admin", adminController.Create)
+	r.DELETE("/api/admin/:id", adminController.Delete)
 
 	r.GET("/api/orders", middleware.AdminOnly, orderController.Index)
 	r.GET("/api/orders/:id", orderController.Show)

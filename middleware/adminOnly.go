@@ -3,7 +3,7 @@ package middleware
 import (
 	"fmt"
 	"os"
-	
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -24,7 +24,7 @@ func AdminOnly(c *gin.Context) {
 	
 		return []byte(os.Getenv("SECRET")), nil
 	})
-	
+
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		fmt.Println(claims["foo"], claims["nbf"])
 	} else {

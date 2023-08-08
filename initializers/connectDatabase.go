@@ -1,8 +1,8 @@
 package initializers
 
 import (
-	"gorm.io/gorm"
 	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 
 	"github.com/hilmialmuhtadeb/rent-car-backend/models"
 )

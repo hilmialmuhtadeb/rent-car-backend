@@ -4,11 +4,11 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 	"github.com/golang-jwt/jwt/v5"
-	
-	"github.com/hilmialmuhtadeb/rent-car-backend/models"
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/hilmialmuhtadeb/rent-car-backend/initializers"
+	"github.com/hilmialmuhtadeb/rent-car-backend/models"
 )
 
 func Index(c *gin.Context) {

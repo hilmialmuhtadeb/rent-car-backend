@@ -1,9 +1,13 @@
 package orderController
 
 import (
+	"os"
+
 	"github.com/gin-gonic/gin"
-	"github.com/hilmialmuhtadeb/rent-car-backend/models"
+	"github.com/golang-jwt/jwt/v5"
+
 	"github.com/hilmialmuhtadeb/rent-car-backend/initializers"
+	"github.com/hilmialmuhtadeb/rent-car-backend/models"
 )
 
 func Index(c *gin.Context) {
@@ -25,6 +29,18 @@ func Show(c *gin.Context) {
 }
 
 func Create(c *gin.Context) {
+	tokenString, err := c.Cookie("Authorization")
+
+	if err != nil {
+		c.JSON(401, gin.H{"error": "Unauthorized!"})
+		return
+	}
+
+	claims := jwt.MapClaims{}
+	_, err = jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SECRET")), nil
+	})
+
 	var input models.OrderInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -32,7 +48,9 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	var order models.Order = models.Order{CarId: input.CarId, UserId: input.UserId, AdminId: 1, PickupLocation: input.PickupLocation, DropoffLocation: input.DropoffLocation, PickupDate: input.PickupDate, DropoffDate: input.DropoffDate, PickupTime: input.PickupTime}
+	userID := int64(claims["id"].(float64))
+
+	var order models.Order = models.Order{CarId: input.CarId, UserId: userID, AdminId: 1, PickupLocation: input.PickupLocation, DropoffLocation: input.DropoffLocation, PickupDate: input.PickupDate, DropoffDate: input.DropoffDate, PickupTime: input.PickupTime}
 	
 	initializers.DB.Create(&order)
 

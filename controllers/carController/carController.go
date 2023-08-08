@@ -1,14 +1,14 @@
 package carController
 
 import (
-	"os"
 	"fmt"
+	"os"
 	"path/filepath"
 
-	"github.com/google/uuid"
 	"github.com/gin-gonic/gin"
-	"github.com/hilmialmuhtadeb/rent-car-backend/models"
+	"github.com/google/uuid"
 	"github.com/hilmialmuhtadeb/rent-car-backend/initializers"
+	"github.com/hilmialmuhtadeb/rent-car-backend/models"
 )
 
 func Index(c *gin.Context) {
@@ -106,8 +106,16 @@ func Delete(c *gin.Context) {
 		c.JSON(404, gin.H{"error": "Record not found!"})
 		return
 	}
-
+	
 	initializers.DB.Delete(&car)
+
+	filePath := fmt.Sprintf("images/%s", car.Image)
+
+	err := os.Remove(filePath)
+	if err != nil {
+		fmt.Println("Failed to remove the old file:", err)
+	}
+
 
 	c.JSON(200, gin.H{"success": "Record deleted!"})
 }
